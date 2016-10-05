@@ -24,7 +24,7 @@ func TestRange(t *testing.T) {
 	assert.True(t, pointsEqualIgnoreOrder(expected, within))
 
 	for _, point := range points {
-		index.Remove(point.Id())
+		index.Remove(point.ID())
 	}
 
 	assert.Equal(t, len(index.Range(oxford, embankment)), 0)
@@ -41,7 +41,7 @@ func TestKNearest(t *testing.T) {
 	assert.Equal(t, index.KNearest(charring, 5, Km(20), all), []Point{charring, embankment, leicester, coventGarden, picadilly}, true)
 
 	noPicadilly := func(p Point) bool {
-		return !strings.Contains(p.Id(), "Piccadilly")
+		return !strings.Contains(p.ID(), "Piccadilly")
 	}
 	assert.Equal(t, index.KNearest(charring, 5, Km(20), noPicadilly), []Point{charring, embankment, leicester, coventGarden, westminster}, true)
 
@@ -72,17 +72,17 @@ func TestExpiringIndex(t *testing.T) {
 	assert.True(t, pointsEqualIgnoreOrder(index.Range(oxford, embankment), []Point{picadilly, charring, embankment, coventGarden, leicester}))
 	assert.Equal(t, index.KNearest(charring, 3, Km(5), all), []Point{charring, embankment, leicester})
 
-	assert.NotNil(t, index.Get(picadilly.Id()))
-	assert.NotNil(t, index.Get(charring.Id()))
+	assert.NotNil(t, index.Get(picadilly.ID()))
+	assert.NotNil(t, index.Get(charring.ID()))
 
 	now = currentTime.Add(7 * time.Minute)
 
-	assert.Nil(t, index.Get(picadilly.Id()))
-	assert.Nil(t, index.Get(charring.Id()))
+	assert.Nil(t, index.Get(picadilly.ID()))
+	assert.Nil(t, index.Get(charring.ID()))
 
-	assert.NotNil(t, index.Get(embankment.Id()))
-	assert.NotNil(t, index.Get(coventGarden.Id()))
-	assert.NotNil(t, index.Get(leicester.Id()))
+	assert.NotNil(t, index.Get(embankment.ID()))
+	assert.NotNil(t, index.Get(coventGarden.ID()))
+	assert.NotNil(t, index.Get(leicester.ID()))
 
 	assert.True(t, pointsEqualIgnoreOrder(index.Range(oxford, embankment), []Point{embankment, coventGarden, leicester}))
 	assert.Equal(t, index.KNearest(charring, 3, Km(5), all), []Point{embankment, leicester, coventGarden})

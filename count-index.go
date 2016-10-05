@@ -53,8 +53,8 @@ func (index *CountIndex) Clone() *CountIndex {
 
 // Add adds a point.
 func (countIndex *CountIndex) Add(point Point) {
-	countIndex.Remove(point.Id())
-	countIndex.currentPosition[point.Id()] = point
+	countIndex.Remove(point.ID())
+	countIndex.currentPosition[point.ID()] = point
 	countIndex.index.AddEntryAt(point).(counter).Add(point)
 }
 

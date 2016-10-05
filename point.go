@@ -23,7 +23,7 @@ const (
 )
 
 type Point interface {
-	Id() string
+	ID() string
 	Lat() float64
 	Lon() float64
 }
@@ -40,10 +40,10 @@ func NewGeoPoint(id string, lat, lon float64) *GeoPoint {
 }
 
 func (p *GeoPoint) String() string {
-	return fmt.Sprintf("%s %f %f", p.Id(), p.Lat(), p.Lon())
+	return fmt.Sprintf("%s %f %f", p.ID(), p.Lat(), p.Lon())
 }
 
-func (p *GeoPoint) Id() string {
+func (p *GeoPoint) ID() string {
 	return p.Pid
 }
 

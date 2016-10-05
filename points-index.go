@@ -32,7 +32,7 @@ func NewExpiringPointsIndex(resolution Meters, expiration Minutes) *PointsIndex 
 
 		set.OnExpire(func(id string, value interface{}) {
 			point := value.(Point)
-			delete(currentPosition, point.Id())
+			delete(currentPosition, point.ID())
 		})
 
 		return set
@@ -79,18 +79,18 @@ func (points *PointsIndex) GetAll() map[string]Point {
 
 // Add adds a point to the index. If a point with the same Id already exists it gets replaced.
 func (points *PointsIndex) Add(point Point) {
-	points.Remove(point.Id())
+	points.Remove(point.ID())
 	newSet := points.index.AddEntryAt(point).(set)
-	newSet.Add(point.Id(), point)
-	points.currentPosition[point.Id()] = point
+	newSet.Add(point.ID(), point)
+	points.currentPosition[point.ID()] = point
 }
 
 // Remove removes a point from the index.
 func (points *PointsIndex) Remove(id string) {
 	if prevPoint, ok := points.currentPosition[id]; ok {
 		set := points.index.GetEntryAt(prevPoint).(set)
-		set.Remove(prevPoint.Id())
-		delete(points.currentPosition, prevPoint.Id())
+		set.Remove(prevPoint.ID())
+		delete(points.currentPosition, prevPoint.ID())
 	}
 }
 

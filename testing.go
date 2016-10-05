@@ -17,7 +17,7 @@ func pointsEqual(p1, p2 []Point) bool {
 func toMap(points []Point) map[string]Point {
 	result := make(map[string]Point)
 	for _, p := range points {
-		result[p.Id()] = p
+		result[p.ID()] = p
 	}
 	return result
 }

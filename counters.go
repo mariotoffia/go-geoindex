@@ -166,7 +166,7 @@ func (c *singleValueAccumulatingCounter) String() string {
 // Multi value counter.
 func newMultiValueCounter(point Point) accumulatingCounter {
 	values := make(map[string]int)
-	values[point.Id()] = 1
+	values[point.ID()] = 1
 	return &multiValueAccumulatingCounter{
 		newSingleValueAccumulatingCounter(point).(*singleValueAccumulatingCounter),
 		values,
@@ -180,12 +180,12 @@ type multiValueAccumulatingCounter struct {
 
 func (counter *multiValueAccumulatingCounter) Add(point Point) {
 	counter.point.Add(point)
-	counter.values[point.Id()] += 1
+	counter.values[point.ID()] += 1
 }
 
 func (counter *multiValueAccumulatingCounter) Remove(point Point) {
 	counter.point.Remove(point)
-	counter.values[point.Id()] -= 1
+	counter.values[point.ID()] -= 1
 }
 
 func (counter *multiValueAccumulatingCounter) Point() *CountPoint {

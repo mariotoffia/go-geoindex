@@ -58,19 +58,19 @@ func TestMultiCounter(t *testing.T) {
 	counter := newExpiringMultiCounter(Minutes(3))
 
 	counter.Add(oxford)
-	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.Id()], 1)
+	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.ID()], 1)
 	now = cur.Add(1 * time.Minute)
 	counter.Add(oxford)
-	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.Id()], 2)
+	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.ID()], 2)
 	now = cur.Add(2 * time.Minute)
 	counter.Add(oxford)
-	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.Id()], 3)
+	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.ID()], 3)
 
 	now = cur.Add(4 * time.Minute)
-	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.Id()], 2)
+	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.ID()], 2)
 
 	now = cur.Add(5 * time.Minute)
-	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.Id()], 1)
+	assert.Equal(t, counter.Point().Count.(map[string]int)[oxford.ID()], 1)
 }
 
 func assertCountPoint(t *testing.T, point *CountPoint, lat, lon, count float64) {
