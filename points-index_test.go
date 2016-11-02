@@ -88,6 +88,47 @@ func TestExpiringIndex(t *testing.T) {
 	assert.Equal(t, index.KNearest(charring, 3, Km(5), all), []Point{embankment, leicester, coventGarden})
 }
 
+func TestExpiringHistoryPoints(t *testing.T) {
+	index := NewExpiringPointsIndex(Km(1.0), Minutes(5))
+
+	currentTime := time.Now()
+
+	now = currentTime
+	// need to insert from old to new
+	index.AddWithTsNoSort(picadilly, currentTime.Add(-4 * time.Minute))
+
+	index.AddWithTsNoSort(charring, currentTime.Add(-3 * time.Minute))
+
+	index.AddWithTsNoSort(embankment, currentTime.Add(-2 * time.Minute))
+
+	index.AddWithTsNoSort(coventGarden, currentTime.Add(-1 * time.Minute))
+
+	index.AddWithTsNoSort(leicester, now)
+
+	assert.True(t, pointsEqualIgnoreOrder(index.Range(oxford, embankment), []Point{picadilly, charring, embankment, coventGarden, leicester}))
+	assert.Equal(t, index.KNearest(charring, 3, Km(5), all), []Point{charring, embankment, leicester})
+
+	assert.NotNil(t, index.Get(picadilly.ID()))
+	assert.NotNil(t, index.Get(charring.ID()))
+
+	now = currentTime.Add(1 * time.Minute)
+
+	index.Add(lewisham)
+
+	now = currentTime.Add(3 * time.Minute)
+
+	assert.Nil(t, index.Get(picadilly.ID()))
+	assert.Nil(t, index.Get(charring.ID()))
+
+	assert.NotNil(t, index.Get(embankment.ID()))
+	assert.NotNil(t, index.Get(coventGarden.ID()))
+	assert.NotNil(t, index.Get(leicester.ID()))
+	assert.NotNil(t, index.Get(lewisham.ID()))
+
+	assert.True(t, pointsEqualIgnoreOrder(index.Range(oxford, embankment), []Point{embankment, coventGarden, leicester}))
+	assert.Equal(t, index.KNearest(charring, 3, Km(5), all), []Point{embankment, leicester, coventGarden})
+}
+
 func BenchmarkPointIndexRange(b *testing.B) {
 	bench(b).CentralLondonRange(NewPointsIndex(Km(1.0)))
 }

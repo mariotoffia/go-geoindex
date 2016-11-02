@@ -6,6 +6,7 @@ package geoindex
 import (
 	"math"
 	"sort"
+	"time"
 )
 
 // A geoindex that stores points.
@@ -82,6 +83,16 @@ func (points *PointsIndex) Add(point Point) {
 	points.Remove(point.ID())
 	newSet := points.index.AddEntryAt(point).(set)
 	newSet.Add(point.ID(), point)
+	points.currentPosition[point.ID()] = point
+}
+
+// Add adds a point to the index. If a point with the same Id already exists it gets replaced.
+// Note: this function is used for restoring, reinsert the history points
+// Need to insert from old to new points in order for expiring to work
+func (points *PointsIndex) AddWithTsNoSort(point Point, ts time.Time) {
+	points.Remove(point.ID())
+	newSet := points.index.AddEntryAt(point).(set)
+	newSet.AddWithTsNoSort(point.ID(), point, ts)
 	points.currentPosition[point.ID()] = point
 }
 

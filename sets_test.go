@@ -85,3 +85,19 @@ func TestExpiringSet(t *testing.T) {
 	set.Remove(oxford.ID())
 	assert.Equal(t, set.Size(), 0)
 }
+
+func TestExpiringSetWithTs(t *testing.T) {
+	set := newExpiringSet(Minutes(10))
+
+	currentTime := time.Now()
+	now = currentTime
+	insertTime := currentTime.Add(-11 * time.Minute)
+	set.AddWithTsNoSort(picadilly.ID(), picadilly, insertTime)
+	assert.Equal(t, set.Size(), 0)
+
+	insertTime = currentTime.Add(-9 * time.Minute)
+	set.AddWithTsNoSort(picadilly.ID(), picadilly, insertTime)
+	set.AddWithTsNoSort(leicester.ID(), leicester, insertTime)
+	assert.Equal(t, set.Size(), 2)
+
+}

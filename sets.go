@@ -7,6 +7,7 @@ import (
 // A set interface.
 type set interface {
 	Add(id string, value interface{})
+	AddWithTsNoSort(id string, value interface{}, ts time.Time)
 	Get(id string) (value interface{}, ok bool)
 	Remove(id string)
 	Values() []interface{}
@@ -32,6 +33,11 @@ func (set basicSet) Clone() set {
 }
 
 func (set basicSet) Add(id string, value interface{}) {
+	set[id] = value
+}
+
+// Basic set has no difference, because the time is not used
+func (set basicSet) AddWithTsNoSort(id string, value interface{}, ts time.Time) {
 	set[id] = value
 }
 
@@ -111,6 +117,14 @@ func (set *expiringSet) Add(id string, value interface{}) {
 	set.expire()
 	set.values.Add(id, value)
 	insertionTime := getNow()
+	set.lastInserted[id] = insertionTime
+	set.insertionOrder.Push(&timestampedValue{id, value, insertionTime})
+}
+
+func (set *expiringSet) AddWithTsNoSort(id string, value interface{}, ts time.Time) {
+	set.expire()
+	set.values.Add(id, value)
+	insertionTime := ts
 	set.lastInserted[id] = insertionTime
 	set.insertionOrder.Push(&timestampedValue{id, value, insertionTime})
 }
