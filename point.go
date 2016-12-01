@@ -3,6 +3,7 @@ package geoindex
 import (
 	"fmt"
 	"math"
+	"sync"
 )
 
 var (
@@ -109,23 +110,29 @@ func distance(p1, p2 Point) Meters {
 	return Meters(dist)
 }
 
-type lonDegreeDistance map[int]Meters
+type lonDegreeDistance struct {
+	distMap map[int]Meters
+	sync.Mutex
+}
 
 func (lonDist lonDegreeDistance) get(lat float64) Meters {
 	latIndex := int(lat * 10)
 	latRounded := float64(latIndex) / 10
 
-	if value, ok := lonDist[latIndex]; ok {
+	lonDist.Lock()
+	defer lonDist.Unlock()
+
+	if value, ok := lonDist.distMap[latIndex]; ok {
 		return value
 	} else {
 		dist := distance(&GeoPoint{"", latRounded, 0.0}, &GeoPoint{"", latRounded, 1.0})
-		lonDist[latIndex] = dist
+		lonDist.distMap[latIndex] = dist
 		return dist
 	}
 }
 
 var (
-	lonLength = lonDegreeDistance{}
+	lonLength = lonDegreeDistance{distMap: make(map[int]Meters)}
 )
 
 // Calculates approximate distance between two points using euclidian distance. The assumption here
