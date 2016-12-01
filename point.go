@@ -112,21 +112,31 @@ func distance(p1, p2 Point) Meters {
 
 type lonDegreeDistance struct {
 	distMap map[int]Meters
-	sync.Mutex
+	sync.RWMutex
+}
+
+func (lonDist lonDegreeDistance) safeRead(ind int) (ele Meters,ok bool) {
+	lonDist.RLock()
+	defer lonDist.RUnlock()
+	ele, ok = lonDist.distMap[ind]
+	return
+}
+
+func (lonDist lonDegreeDistance) safeWrite(ind int, dist Meters) {
+	lonDist.Lock()
+	defer lonDist.Unlock()
+	lonDist.distMap[ind] = dist
 }
 
 func (lonDist lonDegreeDistance) get(lat float64) Meters {
 	latIndex := int(lat * 10)
 	latRounded := float64(latIndex) / 10
 
-	lonDist.Lock()
-	defer lonDist.Unlock()
-
-	if value, ok := lonDist.distMap[latIndex]; ok {
+	if value, ok := lonDist.safeRead(latIndex); ok {
 		return value
 	} else {
 		dist := distance(&GeoPoint{"", latRounded, 0.0}, &GeoPoint{"", latRounded, 1.0})
-		lonDist.distMap[latIndex] = dist
+		lonDist.safeWrite(latIndex, dist)
 		return dist
 	}
 }
