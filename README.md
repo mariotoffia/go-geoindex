@@ -4,7 +4,9 @@ Geo Index library
 
 ## Overview
 
-Splits the earth surface in a grid. At each cell we can store data, such as list of points, count of points, etc. It can do KNearest and Range queries. For more detailed description check https://sudo.hailoapp.com/services/2015/02/18/geoindex/ .
+:bulb: Note that this is only for providing a go.mod file for the forked project.
+
+Splits the earth's surface in a grid. At each cell, we can store data, such as a list of points, count of points, etc. It can do KNearest and Range queries. For more detailed descriptions check https://sudo.hailoapp.com/services/2015/02/18/geoindex/.
 
 ### Demo
 
