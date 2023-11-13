@@ -1,17 +1,17 @@
 package hello
 
 import (
+	"context"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 
 	index "github.com/mariotoffia/go-geoindex"
-
-	"appengine"
 )
 
 func init() {
@@ -28,7 +28,7 @@ func sign() float64 {
 	return -1
 }
 
-func getIndex(context appengine.Context) *index.ClusteringIndex {
+func getIndex(context context.Context) *index.ClusteringIndex {
 	if geoindex == nil {
 		geoindex = index.NewClusteringIndex()
 
@@ -51,11 +51,11 @@ func getIndex(context appengine.Context) *index.ClusteringIndex {
 	return geoindex
 }
 
-func worldCapitals(context appengine.Context) []index.Point {
+func worldCapitals(context context.Context) []index.Point {
 	file, err := os.OpenFile("static/capitals.csv", os.O_RDONLY, 0)
 
 	if err != nil {
-		context.Errorf("%v", err)
+		log.Default().Printf("Unable to open capitals.csv: %v", err)
 		return make([]index.Point, 0)
 	}
 
@@ -86,7 +86,7 @@ func points(w http.ResponseWriter, r *http.Request) {
 	bottomRightLat, _ := strconv.ParseFloat(r.Form["bottomRightLat"][0], 64)
 	bottomRightLon, _ := strconv.ParseFloat(r.Form["bottomRightLon"][0], 64)
 
-	c := appengine.NewContext(r)
+	c := context.Background()
 	visiblePoints := getIndex(c).Range(index.NewGeoPoint("topLeft", topLeftLat, topLeftLon), index.NewGeoPoint("bottomRight", bottomRightLat, bottomRightLon))
 
 	data, _ := json.Marshal(visiblePoints)
@@ -99,7 +99,7 @@ func knearest(w http.ResponseWriter, r *http.Request) {
 	lon, _ := strconv.ParseFloat(r.Form["lon"][0], 64)
 	k, _ := strconv.ParseInt(r.Form["k"][0], 10, 32)
 
-	c := appengine.NewContext(r)
+	c := context.Background()
 	nearest := getIndex(c).KNearest(index.NewGeoPoint("query", lat, lon), int(k), index.Km(5), func(_ index.Point) bool { return true })
 	data, _ := json.Marshal(nearest)
 	fmt.Fprintln(w, string(data))
