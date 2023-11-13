@@ -10,18 +10,44 @@ var (
 	earthRadius = Km(6371.0)
 )
 
+// Direction is a 8 point compass direction
 type Direction int
 
 const (
-	NorthEast Direction = iota
-	East
-	SouthEast
-	South
-	SouthWest
-	West
-	NorthWest
-	North
+	NorthEast Direction = 1
+	East      Direction = 2
+	SouthEast Direction = 3
+	South     Direction = 4
+	SouthWest Direction = 5
+	West      Direction = 6
+	NorthWest Direction = 7
+	North     Direction = 8
 )
+
+// ToRadians Converts a direction to a radian bearing
+func (direction Direction) ToRadians() float64 {
+	var bearingDegrees float64
+	switch direction {
+	case North:
+		bearingDegrees = 0
+	case NorthEast:
+		bearingDegrees = 45
+	case East:
+		bearingDegrees = 90
+	case SouthEast:
+		bearingDegrees = 135
+	case South:
+		bearingDegrees = 180
+	case SouthWest:
+		bearingDegrees = 225
+	case West:
+		bearingDegrees = 270
+	case NorthWest:
+		bearingDegrees = 315
+	}
+
+	return toRadians(bearingDegrees)
+}
 
 type Point interface {
 	ID() string
@@ -115,7 +141,7 @@ type lonDegreeDistance struct {
 	sync.RWMutex
 }
 
-func (lonDist lonDegreeDistance) safeRead(ind int) (ele Meters,ok bool) {
+func (lonDist lonDegreeDistance) safeRead(ind int) (ele Meters, ok bool) {
 	lonDist.RLock()
 	defer lonDist.RUnlock()
 	ele, ok = lonDist.distMap[ind]
